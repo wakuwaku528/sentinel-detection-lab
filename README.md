@@ -1,15 +1,36 @@
-# Cloud Security Operations & Detection Engineering Lab
+# Cloud SOC & Detection Engineering Lab
 
-A hands-on lab environment focused on building and validating security detection engineering workflows, simulating multi-vector attacks, triaging incidents using Microsoft Sentinel and Microsoft Defender, and automating response procedures.
+A modular, enterprise-grade cloud detection lab built to design, simulate, ingest, and detect adversarial techniques using Microsoft Sentinel, Azure Monitor Agent (AMA), and Kusto Query Language (KQL).
+
+---
+
+## Lab Architecture & Pipeline
+1. **Telemetry Ingestion:** Domain Controller (`vm-ad-server-001`) streams Windows Security Events via Azure Monitor Agent (AMA) and Custom Data Collection Rules (DCR) into a centralized Log Analytics workspace.
+2. **Baselining:** Establishing a clean operational baseline of standard business-hour interactive and network logons (`Event ID 4624`) prior to running adversary simulations.
+3. **Detection Engineering:** Writing custom, MITRE-aligned KQL analytics rules with built-in threshold tuning to prevent alert shadowing.
+4. **Incident Triage:** Automated routing of high-fidelity alerts into the unified Microsoft Defender portal for analyst validation.
+
+---
+
+## Attack Simulation & Detection Modules
+
+| # | Attack Scenario | MITRE ATT&CK Mapping | Status | Key Artifacts |
+|---|---|---|---|---|
+| 01 | **Horizontal Password Spraying** | Credential Access (`T1110.003`) | Completed | [View Module](./attacks/01-password-spray/) |
+| 02 | *Suspicious MFA Modification / Abuse* | Credential Access / Defense Evasion | Pending | Coming Soon |
+| 03 | *Privilege Escalation via Group Membership* | Privilege Escalation (`T1078`) | Pending | Coming Soon |
+| 04 | *Unusual Administrative Login Patterns* | Initial Access (`T1078.002`) | Pending | Coming Soon |
+
+---
 
 ## Repository Structure
-* `scripts/`: Contains attack simulation scripts (such as PowerShell brute-force loops and custom payload generators).
-* `detections/KQL/`: Stores custom KQL analytics rules, hunting queries, and detection logic used across the workspace.
-* `playbooks/`: Houses automated response scripts, workbooks, and SOAR orchestration logic.
-* `docs/`: Architecture diagrams, incident write-ups, and investigation screenshots.
-
-## Lab Roadmap & Objectives
-1. **Attack Simulation:** Execute controlled simulations (brute-force, credential access, lateral movement) against lab infrastructure.
-2. **Detection Engineering:** Write, test, and tune custom KQL detection rules inside Microsoft Sentinel to catch simulated tactics.
-3. **Triage & Investigation:** Investigate alerts using Microsoft Defender XDR and Sentinel's investigation graph to map out threat scopes.
-4. **Automated Response:** Build automation and playbooks to accelerate incident triage and contain threats efficiently.
+```text
+sentinel-detection-lab/
+├── attacks/
+│   └── 01-password-spray/
+│       ├── detection.kql
+│       ├── README.md
+│       └── evidence/
+├── scripts/
+│   └── simulation-scripts.ps1
+└── README.md
