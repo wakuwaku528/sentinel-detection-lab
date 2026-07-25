@@ -1,0 +1,6 @@
+SecurityEvent
+| where TimeGenerated > ago(1h)
+| where EventID == 4625
+| summarize TotalFailures = count(), TargetedAccountsCount = dcount(TargetUserName), TargetedUsers = make_set(TargetUserName), StartTime = min(TimeGenerated), EndTime = max(TimeGenerated) by IpAddress, WorkstationName, Computer
+| where TargetedAccountsCount >= 3 and TotalFailures >= 5
+| extend ClientIP = IpAddress, SourceDevice = WorkstationName
