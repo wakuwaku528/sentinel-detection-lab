@@ -17,7 +17,7 @@ A modular, enterprise-grade cloud detection lab built to design, simulate, inges
 | # | Attack Scenario | MITRE ATT&CK Mapping | Status | Key Artifacts |
 |---|---|---|---|---|
 | 01 | **Horizontal Password Spraying** | Credential Access (`T1110.003`) | Completed | [View Module](./attacks/01-password-spray/) |
-| 02 | **Suspicious MFA Modification / Abuse** | Credential Access / Defence Evasion | Completed | [View Module](./attacks/02-mfa-persistence/) |
+| 02 | **Suspicious MFA Modification / Abuse** | Credential Access / Defence Evasion (`T1556.006` / `T1621`) | Completed | [View Module](./attacks/02-mfa-persistence/) |
 | 03 | *Privilege Escalation via Group Membership* | Privilege Escalation (`T1078`) | Pending | Coming Soon |
 | 04 | *Unusual Administrative Login Patterns* | Initial Access (`T1078.002`) | Pending | Coming Soon |
 
