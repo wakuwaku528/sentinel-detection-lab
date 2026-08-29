@@ -1,4 +1,4 @@
-# Phase 3: Suspicious MFA Registration & Persistence Detection
+# Module 2: Suspicious MFA Registration & Persistence Detection
 
 This module covers simulating rogue MFA factor registration, ingesting Entra ID AuditLogs, and deploying custom KQL rules in Microsoft Sentinel.
 
