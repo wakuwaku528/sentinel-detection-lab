@@ -1,0 +1,12 @@
+AuditLogs
+| where OperationName in~ (
+    "User registered security info", 
+    "User registered all required security info", 
+    "User changed default authentication method"
+)
+| extend TargetUser = tostring(TargetResources[0].userPrincipalName)
+| extend InitiatingIP = tostring(InitiatedBy.user.ipAddress)
+| extend InitiatedByAccount = tostring(InitiatedBy.user.userPrincipalName)
+| extend ResultDetails = tostring(ResultDescription)
+| project TimeGenerated, OperationName, TargetUser, InitiatedByAccount, InitiatingIP, Result, ResultDetails
+| order by TimeGenerated desc
