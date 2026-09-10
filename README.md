@@ -1,36 +1,45 @@
-# Cloud SOC & Detection Engineering Lab
+# Microsoft Sentinel Cloud SOC & Detection Engineering Lab
 
-A modular, enterprise-grade cloud detection lab built to design, simulate, ingest, and detect adversarial techniques using Microsoft Sentinel, Azure Monitor Agent (AMA), and Kusto Query Language (KQL).
+A hands-on cloud SOC project built in Microsoft Azure to develop and validate security monitoring, detection engineering, alert triage, and identity-focused incident investigation workflows.
 
----
+The project progresses from building an Active Directory target environment and security telemetry pipeline, through horizontal password spraying detection, to Microsoft Entra ID persistence detection using suspicious MFA registration.
 
-## Lab Architecture & Pipeline
-1. **Telemetry Ingestion:** Domain Controller (`vm-ad-server-001`) streams Windows Security Events via Azure Monitor Agent (AMA) and Custom Data Collection Rules (DCR) into a centralized Log Analytics workspace.
-2. **Baselining:** Establishing a clean operational baseline of standard business-hour interactive and network logons (`Event ID 4624`) prior to running adversary simulations.
-3. **Detection Engineering:** Writing custom, MITRE-aligned KQL analytics rules with built-in threshold tuning to prevent alert shadowing.
-4. **Incident Triage:** Automated routing of high-fidelity alerts into the unified Microsoft Defender portal for analyst validation.
+> **Environment:** Independent cybersecurity lab for hands-on security operations and detection engineering practice. This is not a commercial production SOC environment.
 
 ---
 
-## Attack Simulation & Detection Modules
+## Project Overview
 
-| # | Attack Scenario | MITRE ATT&CK Mapping | Status | Key Artifacts |
-|---|---|---|---|---|
-| 01 | **Horizontal Password Spraying** | Credential Access (`T1110.003`) | Completed | [View Module](./attacks/01-password-spray/) |
-| 02 | **Suspicious MFA Modification / Abuse** | Credential Access / Defence Evasion (`T1556.006` / `T1621`) | Completed | [View Module](./attacks/02-mfa-persistence/) |
-| 03 | *Privilege Escalation via Group Membership* | Privilege Escalation (`T1078`) | Pending | Coming Soon |
-| 04 | *Unusual Administrative Login Patterns* | Initial Access (`T1078.002`) | Pending | Coming Soon |
+This project demonstrates an end-to-end security monitoring and detection workflow using Microsoft Sentinel and Microsoft Defender.
 
----
+Rather than treating each exercise as an isolated lab, the environment was developed progressively across three phases:
 
-## Repository Structure
+1. Build the target infrastructure and identity environment.
+2. Configure and validate security telemetry collection.
+3. Establish normal authentication baselines.
+4. Simulate adversary activity.
+5. Analyse the resulting telemetry with KQL.
+6. Develop custom Microsoft Sentinel analytics rules.
+7. Generate and investigate security incidents.
+8. Tune detection logic and alert grouping based on observed results.
+
+### SOC Workflow
+
 ```text
-sentinel-detection-lab/
-├── attacks/
-│   └── 01-password-spray/
-│       ├── detection.kql
-│       ├── README.md
-│       └── evidence/
-├── scripts/
-│   └── simulation-scripts.ps1
-└── README.md
+Target Environment
+        ↓
+Telemetry Collection
+        ↓
+Baseline Analysis
+        ↓
+Attack Simulation
+        ↓
+KQL Detection Engineering
+        ↓
+Sentinel Analytics Rule
+        ↓
+Incident Generation
+        ↓
+SOC Triage
+        ↓
+Detection Tuning
