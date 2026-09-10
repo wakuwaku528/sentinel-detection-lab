@@ -192,6 +192,15 @@ Detection Revalidation
 
 ---
 
+## Technical Artefacts
+
+| Artefact | Description |
+|---|---|
+| [`detection.kql`](./detection.kql) | KQL detection logic for identifying suspicious MFA security information registration and authentication method changes in Microsoft Entra ID |
+| [`tuning-notes.md`](./tuning-notes.md) | Detection tuning notes documenting duplicate incident behaviour, alert grouping changes, and revalidation of the tuned Sentinel rule |
+
+---
+
 ## Evidence
 
 Evidence collected during the scenario includes:
