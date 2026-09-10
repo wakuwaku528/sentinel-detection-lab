@@ -150,6 +150,16 @@ Detection Tuning
 
 ---
 
+## Technical Artefacts
+
+| Artefact | Description |
+|---|---|
+| [`detection.kql`](./detection.kql) | KQL detection logic for identifying horizontal password spraying across multiple accounts |
+| [`password-spray-script.ps1`](./password-spray-script.ps1) | PowerShell script used to generate controlled password spraying telemetry in the lab |
+| [`tuning-notes.md`](./tuning-notes.md) | Detection tuning notes documenting the overlap between brute-force and password-spray analytics rules |
+
+---
+
 ## Evidence
 
 Evidence collected during the scenario includes:
