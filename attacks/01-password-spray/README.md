@@ -16,7 +16,7 @@ The attack simulation cycles three test passwords across five domain accounts to
 
 The PowerShell execution logic is located in:
 
-[`../../scripts/simulation-scripts.ps1`](../../scripts/simulation-scripts.ps1)
+[`password-spray-script.ps1`](./password-spray-script.ps1)
 
 The simulation generated **15 failed authentication events across 5 target accounts**, which were collected from the domain controller and ingested into Microsoft Sentinel through the AMA telemetry pipeline.
 
