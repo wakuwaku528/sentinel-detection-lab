@@ -1,29 +1,31 @@
 # Microsoft Sentinel Cloud SOC & Detection Engineering Lab
 
-A hands-on Microsoft Azure security operations lab built to practise the end-to-end detection lifecycle using Microsoft Sentinel, Microsoft Defender, Windows security telemetry, Active Directory, and Microsoft Entra ID.
+A hands-on Microsoft Azure security operations project demonstrating the end-to-end detection lifecycle across Active Directory, Microsoft Sentinel, Microsoft Defender, and Microsoft Entra ID.
 
-The project progresses from building the underlying identity and telemetry environment to simulating attacks, developing KQL detections, generating incidents, performing analyst triage, and tuning detection logic based on observed results.
+The project progresses from building the underlying identity and telemetry environment to simulating adversary activity, developing KQL detections, generating incidents, performing analyst triage, and tuning detections based on observed telemetry.
 
-> **Project scope:** This is an independently built cybersecurity lab using controlled attack simulations and lab-generated telemetry. It does not represent commercial or production SOC employment.
+> **Project Scope:** This is an independently built cybersecurity lab using controlled attack simulations and lab-generated telemetry. It does not represent commercial or production SOC employment.
 
 ---
 
 ## Project Overview
 
-The goal of this project is to demonstrate practical security operations and detection engineering workflows rather than isolated KQL queries.
+This repository demonstrates practical SOC and detection engineering workflows rather than isolated KQL exercises.
 
-The environment was developed progressively across three phases:
+The project follows a progressive structure:
 
-1. Build the target infrastructure and identity environment.
-2. Configure security auditing and telemetry collection.
-3. Establish baseline activity.
-4. Simulate adversary behaviour.
-5. Analyse the resulting telemetry.
-6. Develop custom KQL detections.
-7. Generate and investigate Sentinel incidents.
-8. Tune detection logic based on testing and investigation results.
+```text
+Foundation
+Active Directory + Security Auditing + Detection Validation
+        ↓
+Module 01
+Horizontal Password Spraying
+        ↓
+Module 02
+Suspicious MFA Registration & Persistence
+```
 
-### Detection Lifecycle
+Across the project, the detection lifecycle includes:
 
 ```text
 Target Environment
@@ -49,31 +51,37 @@ Detection Tuning
 
 ---
 
-## Project Phases
+## Foundation: Target Environment, Identity & Detection Validation
 
-### Phase 1: Target Environment & Identity Architecture
+[View Foundation](./foundation/)
 
-Built the Azure-hosted Active Directory environment that provides the identities, systems, and security telemetry used throughout the detection lab.
+The foundation establishes the Azure-hosted Windows and Active Directory environment used by the later detection modules.
 
 Key work included:
 
 - Deployed Active Directory Domain Services for the `lab.local` domain.
 - Created the `Corp-HQ` organisational structure with administrative, departmental, and test identities.
 - Automated Active Directory user provisioning using PowerShell.
-- Configured security groups and role-based access boundaries within the lab.
+- Configured departmental security groups and access boundaries.
 - Enabled advanced Windows auditing for authentication activity.
-- Validated successful and failed authentication telemetry in Windows Security Events.
-- Prepared the environment for subsequent adversary simulations and Sentinel detection engineering.
+- Validated successful and failed authentication telemetry using Windows Security Events.
+- Generated controlled brute-force authentication activity.
+- Developed an initial KQL detection to validate that the environment could generate usable security telemetry for SOC analysis.
 
-This phase established the infrastructure and telemetry foundation used by the later attack modules.
+### Technical Artefacts
+
+- [`BruteForce_Detection.kql`](./foundation/BruteForce_Detection.kql)
+- [`Simulate-BruteForce.ps1`](./foundation/Simulate-BruteForce.ps1)
 
 ---
 
-### Module 01: Horizontal Password Spraying
+## Module 01: Horizontal Password Spraying
 
 [View Module 01](./attacks/01-password-spray/)
 
-Simulated a horizontal password spraying attack against multiple Active Directory accounts and developed a Microsoft Sentinel detection workflow around the resulting authentication telemetry.
+This module extends the foundation into a Microsoft Sentinel detection workflow for horizontal password spraying.
+
+A controlled PowerShell simulation cycled three test passwords across five Active Directory accounts, generating failed authentication activity for ingestion and analysis.
 
 The module covers:
 
@@ -85,48 +93,72 @@ The module covers:
 - PowerShell attack simulation
 - KQL detection engineering
 - Microsoft Sentinel analytics rules
+- Detection threshold logic
 - Detection tuning
 - Alert and incident generation
 - Microsoft Defender incident triage
 
-During validation, overlapping brute-force and password-spray detection logic was identified and refined to distinguish high-volume attacks against an individual account from password spraying across multiple accounts.
+During validation, overlapping brute-force and password-spray detection logic was identified.
+
+The legacy brute-force detection was refined to distinguish repeated attacks against an individual account from horizontal password spraying across multiple accounts, reducing overlapping incident generation while preserving both detection scenarios.
 
 **MITRE ATT&CK:** `T1110.003` — Brute Force: Password Spraying
 
+### Technical Artefacts
+
+- [`detection.kql`](./attacks/01-password-spray/detection.kql)
+- [`password-spray-script.ps1`](./attacks/01-password-spray/password-spray-script.ps1)
+- [`tuning-notes.md`](./attacks/01-password-spray/tuning-notes.md)
+- [`evidence/`](./attacks/01-password-spray/evidence/)
+
 ---
 
-### Module 02: Suspicious MFA Registration & Persistence
+## Module 02: Suspicious MFA Registration & Persistence
 
 [View Module 02](./attacks/02-mfa-persistence/)
 
-Extended the SOC environment into Microsoft Entra ID to investigate identity persistence through suspicious MFA security information changes.
+This module extends the SOC environment into Microsoft Entra ID identity threat detection.
+
+The scenario simulates an attacker operating with valid credentials and registering an additional authentication method to establish persistence.
 
 The module covers:
 
-- Microsoft Entra ID telemetry
-- `AuditLogs` and sign-in context
+- Microsoft Entra ID `AuditLogs`
+- Microsoft Entra ID `SigninLogs`
 - Rogue MFA registration simulation
 - KQL identity detection engineering
 - Microsoft Sentinel analytics rules
 - Account and IP entity mapping
 - Alert enrichment
 - Incident generation
-- Alert grouping and tuning
-- Identity-focused analyst triage
-- Containment workflow development
+- Alert grouping
+- Detection tuning
+- Identity-focused incident triage
+- Identity containment workflow development
 
-Testing demonstrated that a single MFA registration workflow can generate multiple related Entra ID audit events. The detection was tuned based on the observed telemetry so related alerts could be correlated into a more actionable incident.
+Testing showed that a single MFA registration workflow generated multiple related Entra ID audit events.
+
+The initial alert grouping configuration caused related activity to be separated into multiple incidents. The underlying telemetry was investigated, grouping logic was refined around the affected Account entity, and the scenario was retested.
+
+The revised configuration successfully consolidated related alerts into a more actionable Sentinel incident.
 
 **MITRE ATT&CK:** `T1098.005`
+
+### Technical Artefacts
+
+- [`detection.kql`](./attacks/02-mfa-persistence/detection.kql)
+- [`tuning-notes.md`](./attacks/02-mfa-persistence/tuning-notes.md)
+- [`evidence/`](./attacks/02-mfa-persistence/evidence/)
 
 ---
 
 ## Detection Scenarios
 
-| Module | Scenario | Primary Data Source | Detection Focus | MITRE ATT&CK |
+| Stage | Scenario | Primary Data Source | Detection Focus | MITRE ATT&CK |
 |---|---|---|---|---|
-| 01 | Horizontal Password Spraying | Windows Security Events | Authentication failures distributed across multiple accounts | `T1110.003` |
-| 02 | Suspicious MFA Registration | Microsoft Entra ID AuditLogs | Authentication method registration and modification | `T1098.005` |
+| Foundation | Brute-Force Validation | Windows Security Events | Repeated authentication failures | Detection validation |
+| Module 01 | Horizontal Password Spraying | Windows Security Events | Failed authentication across multiple accounts | `T1110.003` |
+| Module 02 | Suspicious MFA Registration | Microsoft Entra ID AuditLogs | Authentication method registration and modification | `T1098.005` |
 
 ---
 
@@ -138,11 +170,13 @@ Testing demonstrated that a single MFA registration workflow can generate multip
 - Azure Log Analytics
 - Kusto Query Language (KQL)
 - Microsoft Sentinel Analytics Rules
-- Entity Mapping
-- Alert Grouping
+- Detection Threshold Development
 - Detection Tuning
+- Alert Grouping
+- Entity Mapping
+- Alert Enrichment
 
-### Telemetry
+### Security Telemetry
 
 - Windows Security Events
 - Microsoft Entra ID AuditLogs
@@ -167,9 +201,10 @@ Testing demonstrated that a single MFA registration workflow can generate multip
 - Authentication Analysis
 - Identity Threat Analysis
 - Detection Validation
+- Identity Containment Planning
 - MITRE ATT&CK
 
-### Scripting
+### Scripting & Querying
 
 - PowerShell
 - KQL
@@ -181,29 +216,35 @@ Testing demonstrated that a single MFA registration workflow can generate multip
 ```text
 sentinel-detection-lab/
 │
+├── foundation/
+│   ├── README.md
+│   ├── BruteForce_Detection.kql
+│   └── Simulate-BruteForce.ps1
+│
 ├── attacks/
 │   │
 │   ├── 01-password-spray/
 │   │   ├── README.md
-│   │   ├── KQL detection artefacts
+│   │   ├── detection.kql
+│   │   ├── password-spray-script.ps1
+│   │   ├── tuning-notes.md
 │   │   └── evidence/
 │   │
 │   └── 02-mfa-persistence/
 │       ├── README.md
-│       ├── KQL detection artefacts
+│       ├── detection.kql
+│       ├── tuning-notes.md
 │       └── evidence/
 │
-├── detections/
-│   └── KQL/
-│       └── Foundation detection artefacts
-│
-├── scripts/
-│   └── simulation-scripts.ps1
-│
+├── .gitignore
 └── README.md
 ```
 
-Each attack module is structured as a self-contained SOC scenario containing the relevant detection logic, supporting evidence, and investigation documentation.
+The repository is organised so that each stage documents a progressively more complete security operations workflow.
+
+The **Foundation** establishes the infrastructure and telemetry required for detection.
+
+Each subsequent **attack module** contains the detection logic, technical notes, investigation workflow, and supporting evidence associated with that scenario.
 
 ---
 
@@ -211,13 +252,13 @@ Each attack module is structured as a self-contained SOC scenario containing the
 
 This project provides hands-on technical evidence across the security detection lifecycle:
 
-- Microsoft Sentinel SIEM configuration and investigation
+- Microsoft Sentinel SIEM investigation
 - Azure security telemetry ingestion
 - Windows authentication log analysis
 - Microsoft Entra ID audit log analysis
 - KQL query development
 - Custom Sentinel analytics rule development
-- Detection threshold design
+- Detection threshold development
 - Detection tuning
 - Alert grouping
 - Entity mapping and enrichment
@@ -225,25 +266,26 @@ This project provides hands-on technical evidence across the security detection 
 - Authentication attack investigation
 - Identity persistence investigation
 - Active Directory configuration
+- Windows security auditing
 - PowerShell scripting
 - Controlled adversary simulation
 - MITRE ATT&CK mapping
 
 ---
 
-## Detailed Technical Write-Ups
+## Technical Write-Ups
 
-The project is also documented as a three-part technical series on Medium.
+The project is documented in a three-part technical series on Medium.
 
 ### Phase 1 — Target Environment & Identity Architecture
 
-Active Directory infrastructure, identity provisioning, security groups, advanced audit policy, authentication telemetry, and initial detection preparation.
+Active Directory infrastructure, automated identity provisioning, security groups, Windows audit policy, authentication telemetry, brute-force simulation, and initial detection validation.
 
 [Read Phase 1 on Medium](https://medium.com/@ianchow528/building-an-enterprise-lab-from-scratch-phase-1-active-directory-automation-and-iam-c592d3a521a3)
 
 ### Phase 2 — Horizontal Password Spraying & Credential Access Detection
 
-AMA and DCR telemetry ingestion, authentication baselining, password spray simulation, KQL detection engineering, rule tuning, and Defender incident triage.
+AMA and DCR telemetry ingestion, authentication baselining, password spray simulation, KQL detection engineering, rule tuning, and Microsoft Defender incident triage.
 
 [Read Phase 2 on Medium](https://medium.com/@ianchow528/building-an-automated-cloud-soc-detection-pipeline-phase-2-automated-telemetry-event-0a8ef1b080af)
 
@@ -261,4 +303,4 @@ This repository documents an independently built cybersecurity lab created for h
 
 All attacks were executed in controlled test environments against lab-created identities and infrastructure.
 
-The telemetry, alerts, incidents, detection rules, screenshots, and investigation workflows shown in this repository were produced as part of the lab and should not be interpreted as commercial production SOC experience.
+The telemetry, alerts, incidents, detection rules, screenshots, scripts, and investigation workflows shown in this repository were produced as part of the lab and should not be interpreted as commercial production SOC experience.
